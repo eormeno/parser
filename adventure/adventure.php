@@ -14,19 +14,57 @@ use Antlr\Antlr4\Runtime\Tree\TerminalNode;
 
 
 final class TreeShapeListener implements ParseTreeListener {
+
+    private $vars = [];
+
     public function visitTerminal(TerminalNode $node) : void {
-        echo $node->getSymbol()->getType() . " -> " . $node->getText() . "\n";
     }
     public function visitErrorNode(ErrorNode $node) : void {
-        // display in console which token is not recognized
-        echo "Error: " . $node->getSymbol()->getType() . " -> " . $node->getText() . "\n";
+        // display error message with line number
+        $line = $node->getSymbol()->getLine();
+        $msg = $node->getSymbol()->getText();
+        echo "Error on line " . $line . ": " . $msg . "\n";
 
     }
     public function exitEveryRule(ParserRuleContext $ctx) : void {
     }
 
     public function enterEveryRule(ParserRuleContext $ctx) : void {
-        // echo $ctx->getRuleIndex() . " -> " . $ctx->getText() . "\n";
+        if ($ctx instanceof Context\AssignmentContext) {
+            $id = $ctx->ID()->getText();
+            $expr = $ctx->expression()->getText();
+            echo "Var:\t" . $id . " = " . $expr . "\n";
+            $this->vars[$id] = $expr;
+        }
+        if ($ctx instanceof Context\Move_statementContext) {
+            $id_expr = $ctx->expression()->ID();
+            $str_expr = $ctx->expression()->STRING();
+            $value = null;
+            if ($id_expr != null) {
+                $id = $id_expr->getText();
+                $value = $this->vars[$id];
+            } else if ($str_expr != null) {
+                $value = $str_expr->getText();
+            } else {
+                $value = $ctx->expression()->getText();
+            }    
+            echo "Move:\t" . $value . "\n";
+        }
+
+        if ($ctx instanceof Context\Take_statementContext) {
+            $id_expr = $ctx->expression()->ID();
+            $str_expr = $ctx->expression()->STRING();
+            $value = null;
+            if ($id_expr != null) {
+                $id = $id_expr->getText();
+                $value = $this->vars[$id];
+            } else if ($str_expr != null) {
+                $value = $str_expr->getText();
+            } else {
+                $value = $ctx->expression()->getText();
+            }    
+            echo "Take:\t" . $value . "\n";
+        }
     }
 }
 
@@ -36,5 +74,7 @@ $tokens = new CommonTokenStream($lexer);
 $parser = new AdventureParser($tokens);
 $parser->addErrorListener(new DiagnosticErrorListener());
 $tree = $parser->program();
+
+// echo $tree->toStringTree() . "\n";
 
 ParseTreeWalker::default()->walk(new TreeShapeListener(), $tree);
