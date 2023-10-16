@@ -1,0 +1,9 @@
+move to "red"
+move to "green"
+var place = "blue"
+move to place
+repeat until 10:
+    move to "red"
+    take "energy"
+    take "card"
+hit enemy

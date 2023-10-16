@@ -1,0 +1,10 @@
+{
+    "nombre": "pepe",
+    "apellido": "perez",
+    "edad": 30,
+    "casado" : true,
+    "direccion": {
+        "calle": "calle 123",
+        "ciudad": "bogota"
+    }
+}
