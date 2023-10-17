@@ -20,7 +20,6 @@ final class TreeShapeListener implements ParseTreeListener {
     public function visitTerminal(TerminalNode $node) : void {
     }
     public function visitErrorNode(ErrorNode $node) : void {
-        // display error message with line number
         $line = $node->getSymbol()->getLine();
         $msg = $node->getSymbol()->getText();
         echo "Error on line " . $line . ": " . $msg . "\n";
@@ -74,7 +73,5 @@ $tokens = new CommonTokenStream($lexer);
 $parser = new AdventureParser($tokens);
 $parser->addErrorListener(new DiagnosticErrorListener());
 $tree = $parser->program();
-
-// echo $tree->toStringTree() . "\n";
 
 ParseTreeWalker::default()->walk(new TreeShapeListener(), $tree);
